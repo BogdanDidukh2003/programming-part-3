@@ -1,0 +1,8 @@
+4,Roll,45
+1,Fury,50
+4,Rising,40
+8,Silent,35
+2,Frame,50
+5,Beast,45
+15,Carrier,40
+3,Sniper,55
