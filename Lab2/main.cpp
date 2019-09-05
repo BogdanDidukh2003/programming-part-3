@@ -28,15 +28,16 @@ int main() {
     inputFile.close();
 
     sort(prices.begin(), prices.end());
-    for (int count = 0; count < prices.size(); count++) {
-        if (count && (count % 2 == 0)) {
+
+    for (int count = 1; count <= prices.size(); count++) {
+        if (count % 3 == 0) {
             cost += prices.back() * discount;
             prices.pop_back();
-            if (count < prices.size()) {
-                cost += prices[count];
+            if (count <= prices.size()) {
+                cost += prices[count - 1];
             }
         } else {
-            cost += prices[count];
+            cost += prices[count - 1];
         }
     }
 
