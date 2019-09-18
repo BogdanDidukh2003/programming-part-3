@@ -5,6 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <iomanip>
+#include <cmath>
 
 #define INPUT_FILEPATH "../discnt.in"
 #define OUTPUT_FILEPATH "../discnt.out"
@@ -29,16 +30,15 @@ int main() {
 
     sort(prices.begin(), prices.end());
 
-    for (int count = 1; count <= prices.size(); count++) {
-        if (count % 3 == 0) {
-            cost += prices.back() * discount;
-            prices.pop_back();
-            if (count <= prices.size()) {
-                cost += prices[count - 1];
-            }
-        } else {
-            cost += prices[count - 1];
-        }
+    int productsNumber = prices.size();
+    int discountProductsLeftIndex = productsNumber - floor(productsNumber / 3);
+
+    int count;
+    for (count = 0; count < discountProductsLeftIndex; count++) {
+        cost += prices[count];
+    }
+    for (count = discountProductsLeftIndex; count < productsNumber; count++) {
+        cost += prices[count] * discount;
     }
 
     ofstream outputFile;
