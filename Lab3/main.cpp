@@ -36,14 +36,14 @@ int main() {
             allCovered.insert(i);
         set<int> currentCoverage;
 
-        int partitionsNumber = pow(2, beerTypesNumber);
-        int partitionIndex, beerType, neededBeerTypes;
+        unsigned long partitionsNumber = pow(2, beerTypesNumber);
+        unsigned long partitionIndex, beerType, neededBeerTypes;
 
         for (partitionIndex = 0; partitionIndex < partitionsNumber; partitionIndex++) {
             neededBeerTypes = 0;
             currentCoverage.clear();
             for (beerType = 0; beerType < beerTypesNumber; beerType++) {
-                if (partitionIndex & (1 << beerType)) {
+                if (partitionIndex & ((unsigned long)1 << beerType)) {
                     neededBeerTypes++;
                     for (const int& worker: beersToWorkers[beerType]) {
                         currentCoverage.insert(worker);
@@ -51,7 +51,7 @@ int main() {
                 }
             }
             if (currentCoverage == allCovered && neededBeerTypes < minNeededBeerTypesNumber) {
-                minNeededBeerTypesNumber = neededBeerTypes;
+                minNeededBeerTypesNumber = (int)neededBeerTypes;
             }
         }
     }
