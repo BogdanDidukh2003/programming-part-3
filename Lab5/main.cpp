@@ -58,6 +58,10 @@ uint256_t convertBinaryToUnsignedInt(const string &binary) {
 }
 
 bool isNumberCompatibleForBase(uint256_t number, const uint64_t& base) {
+    if (number == 1) {
+        return true;
+    }
+
     uint256_t previous, remainder;
 
     do {
