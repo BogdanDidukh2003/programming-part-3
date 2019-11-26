@@ -6,25 +6,25 @@
 #include <boost/multiprecision/cpp_int.hpp>
 
 #define ONE '1'
+#define ZERO '0'
 #define OUTPUT_FILEPATH "../data.out"
+#define uint256_t boost::multiprecision::uint256_t
 
 using namespace std;
-using namespace boost::multiprecision;
 
-inline uint256_t convertBinaryToUnsignedInt(const string &binary);
+inline string convertDecimalToBinary(uint256_t decimal);
 
-inline bool isNumberCompatibleForBase(uint256_t number, const uint64_t &base);
+inline set<string> findAllPossibleBinaries(const string &binary, const unsigned int &base);
 
-inline bool isBinaryCompatibleForBase(const string &binary, const uint64_t &base);
-
-inline unsigned int solution(const string &strNumber, const unsigned int &baseNumber);
+inline unsigned int solutionWithPreparation(const string &binary, const unsigned int &base,
+        const set<string> &allPossibleBinaries);
 
 int main() {
     const vector<string> INPUT_FILEPATH = {"../data1.in", "../data2.in", "../data3.in", "../data4.in"};
 
     uint256_t number = 0;
-    string strNumber;
-    unsigned int baseNumber;
+    string binary;
+    unsigned int base;
     int minParts = 0;
 
     int fileNumber;
@@ -33,11 +33,11 @@ int main() {
 
     ifstream inputFile;
     inputFile.open(INPUT_FILEPATH[fileNumber - 1], ios::in);
-    inputFile >> strNumber;
-    inputFile >> baseNumber;
+    inputFile >> binary;
+    inputFile >> base;
 
-    minParts = int(solution(strNumber, baseNumber));
-    if (minParts >= strNumber.size()) {
+    minParts = int(solutionWithPreparation(binary, base, findAllPossibleBinaries(binary, base)));
+    if (minParts >= binary.size()) {
         minParts = -1;
     }
 
@@ -49,53 +49,61 @@ int main() {
     return 0;
 }
 
-inline uint256_t convertBinaryToUnsignedInt(const string &binary) {
-    uint256_t decimal = 0;
-    int size = binary.size();
-    for (int i = size - 1; i >= 0; i--) {
-        if (binary[i] == ONE) {
-            decimal += uint256_t(pow(2, (size - i - 1)));
+inline string convertDecimalToBinary(uint256_t decimal) {
+    string binary;
+
+    if (decimal == 0) {
+        binary.push_back(ZERO);
+        return binary;
+    }
+
+    for (int i = 0; decimal > 0; i++) {
+        if (decimal % 2) {
+            binary.push_back(ONE);
+        } else {
+            binary.push_back(ZERO);
         }
+        decimal /= 2;
     }
-    return decimal;
+
+    int length = binary.length();
+    for (int i = 0; i < length / 2; i++) {
+        swap(binary[i], binary[length - i - 1]);
+    }
+
+    return binary;
 }
 
-inline bool isNumberCompatibleForBase(uint256_t number, const uint64_t &base) {
-    if (number == 1) {
-        return true;
-    }
-
-    uint256_t previous, remainder;
-
+inline set<string> findAllPossibleBinaries(const string &binary, const unsigned int &base) {
+    set<string> possibleBinaries;
+    string possibleBinary;
+    unsigned int power = 0;
     do {
-        previous = number;
-        number /= base;
-        remainder = previous - number * base;
-    } while (number > 1 && !remainder);
+        possibleBinary = convertDecimalToBinary(uint256_t(pow(base, power)));
+        possibleBinaries.insert(possibleBinary);
+        power++;
+    } while (possibleBinary.size() <= binary.size());
 
-    return (number == 1 && !remainder);
+    return possibleBinaries;
 }
 
-inline bool isBinaryCompatibleForBase(const string &binary, const uint64_t &base) {
-    return isNumberCompatibleForBase(convertBinaryToUnsignedInt(binary), base);
-}
-
-inline unsigned int solution(const string &strNumber, const unsigned int &baseNumber) {
-    if (isBinaryCompatibleForBase(strNumber, baseNumber)) {
+inline unsigned int solutionWithPreparation(const string &binary, const unsigned int &base,
+        const set<string> &allPossibleBinaries) {
+    if (allPossibleBinaries.find(binary) != allPossibleBinaries.end()) {
         return 1;
     }
-    unsigned int currentSolution = strNumber.size();
+    unsigned int currentSolution = binary.size();
     set<unsigned int> allSolutions;
 
-    for (unsigned long k = 1; k < strNumber.size(); k++) {
-        if (isBinaryCompatibleForBase(strNumber.substr(k, strNumber.size() - 1), baseNumber)) {
-            allSolutions.insert(solution(strNumber.substr(0, k), baseNumber) + 1);
+    for (unsigned long k = 1; k < binary.size(); k++) {
+        if (allPossibleBinaries.find(binary.substr(k, binary.size() - 1)) != allPossibleBinaries.end()) {
+            allSolutions.insert(solutionWithPreparation(binary.substr(0, k), base, allPossibleBinaries) + 1);
         }
     }
 
-    for (const auto &sol : allSolutions) {
-        if (sol < currentSolution) {
-            currentSolution = sol;
+    for (const auto &solution : allSolutions) {
+        if (solution < currentSolution) {
+            currentSolution = solution;
         }
     }
 
