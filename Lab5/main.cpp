@@ -37,7 +37,7 @@ int main() {
     inputFile >> base;
 
     minParts = int(solutionWithPreparation(binary, base, findAllPossibleBinaries(binary, base)));
-    if (minParts >= binary.size()) {
+    if (minParts > binary.size()) {
         minParts = -1;
     }
 
@@ -92,7 +92,7 @@ inline unsigned int solutionWithPreparation(const string &binary, const unsigned
     if (allPossibleBinaries.find(binary) != allPossibleBinaries.end()) {
         return 1;
     }
-    unsigned int currentSolution = binary.size();
+    unsigned int currentSolution = binary.size() + 1;
     set<unsigned int> allSolutions;
 
     for (unsigned long k = 1; k < binary.size(); k++) {
